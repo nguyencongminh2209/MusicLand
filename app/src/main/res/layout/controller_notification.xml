@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center">
+
+<!--    <TextView-->
+<!--        android:id="@+id/title"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:gravity="center"-->
+
+<!--        android:text="TITLE"/>-->
+<!--    <LinearLayout-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content">-->
+<!--        <ImageButton-->
+<!--            android:id="@+id/btn_previous"-->
+<!--            android:text="Prev"-->
+<!--            android:src="@drawable/backward"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"/>-->
+<!--        <ImageButton-->
+<!--            android:id="@+id/btn_play_pause"-->
+<!--            android:text="Play/Pause"-->
+<!--            android:src="@drawable/pause"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"/>-->
+<!--        <ImageButton-->
+<!--            android:id="@+id/btn_next"-->
+<!--            android:text="Next"-->
+<!--            android:src="@drawable/next"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"/>-->
+<!--    </LinearLayout>-->
+
+</LinearLayout>
