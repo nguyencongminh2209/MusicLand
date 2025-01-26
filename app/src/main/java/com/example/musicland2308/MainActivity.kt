@@ -84,6 +84,9 @@ class MainActivity : AppCompatActivity() {
             intent.putExtra("SONG_ID", song.id)
             intent.action = "ACTION_PLAY"
             startService(intent)
+            isPlay = true
+            btnPlayPause.setImageResource(R.drawable.pause)
+
         })
         recyclerView.adapter = adapter
         //Next
@@ -101,17 +104,16 @@ class MainActivity : AppCompatActivity() {
             startService(intent)
         }
         //Pause_Resume
-
         btnPlayPause.setOnClickListener {
             val intent = Intent(this@MainActivity, MusicService::class.java)
-            Log.d("ClickPausePlay","ok")
+            Log.d("ClickPausePlay", "ok")
             if (isPlay) {
 //                btnPlayPause.setImageResource(R.drawable.pause)
-                Log.d("ClickPausePlay","Pause")
+                Log.d("ClickPausePlay", "Pause")
                 intent.action = "ACTION_PAUSE"
 
             } else {
-                Log.d("ClickPausePlay","Start")
+                Log.d("ClickPausePlay", "Start")
                 intent.action = "ACTION_RESUME"
             }
             isPlay = !isPlay
@@ -124,7 +126,7 @@ class MainActivity : AppCompatActivity() {
             requesNeedsPermission()
         }
         recyclerView.layoutManager = LinearLayoutManager(this)
-      }
+    }
 
     fun checkNeededsPermission(): Boolean {
         val result: Int

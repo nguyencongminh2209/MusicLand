@@ -1,5 +1,6 @@
 package com.example.musicland2308
 
+import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.app.Notification
 import android.app.NotificationChannel
@@ -31,13 +32,15 @@ import kotlin.random.Random
 
 
 //class MusicService : android.app.Service() {
-class MusicService : Service(){
+class MusicService : Service() {
     interface OnSeekChangedListener {
         fun onSeekChanged(pos: Int)
     }
-    enum class RepeatMode{
+
+    enum class RepeatMode {
         OFF, ONE, ALL
     }
+
     private val onSeekChangeListeners = ArrayList<OnSeekChangedListener>()
     val listSong = MutableLiveData<List<Song>>(emptyList())
     private var currentSongIndex = -1
@@ -45,6 +48,7 @@ class MusicService : Service(){
     private var isSuffer = false
     private var repeatMode = RepeatMode.OFF
     val MUSIC_CHANNEL_ID = "music_channels_id"
+
     // Đăng ký BroadcastReceiver
     val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -52,27 +56,30 @@ class MusicService : Service(){
             // Xử lý thông báo
         }
     }
+
+    @SuppressLint("ForegroundServiceType")
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, IntentFilter("MEDIA_PLAYER_STATUS"))
+        LocalBroadcastManager.getInstance(this)
+            .registerReceiver(receiver, IntentFilter("MEDIA_PLAYER_STATUS"))
         //Init mediaPlayer
         mediaPlayer = MediaPlayer()
-        mediaPlayer.setOnPreparedListener{
+        mediaPlayer.setOnPreparedListener {
             mediaPlayer.start()
             startForeground(111, createNotification())
         }
         mediaPlayer.setOnCompletionListener {
-            if(repeatMode == RepeatMode.OFF) {
+            if (repeatMode == RepeatMode.OFF) {
                 currentSongIndex = -1
-            } else if (repeatMode == RepeatMode.ONE){
+            } else if (repeatMode == RepeatMode.ONE) {
                 playSongAtCurrentIndex()
-            } else if (repeatMode == RepeatMode.ALL){
+            } else if (repeatMode == RepeatMode.ALL) {
                 nextSong()
             }
         }
-        mediaPlayer.setOnSeekCompleteListener {  }
+        mediaPlayer.setOnSeekCompleteListener { }
     }
 
     override fun onDestroy() {
@@ -81,7 +88,7 @@ class MusicService : Service(){
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if(intent != null && intent.action != null) {
+        if (intent != null && intent.action != null) {
             when (intent?.action) {
                 "LOAD_DATA" -> /*load data */ loadAllSong()
                 "ACTION_PLAY" -> /*play*/ playSong(intent)
@@ -91,7 +98,7 @@ class MusicService : Service(){
                         pause()
                     }
                 }
-                "ACTION_RESUME" -> /*resume*/{
+                "ACTION_RESUME" -> /*resume*/ {
                     if (!mediaPlayer.isPlaying) {
                         resume()
                     }
@@ -115,7 +122,7 @@ class MusicService : Service(){
         isSuffer = false
     }
 
-    private fun setOnSeekListener(onSeekCompleteListener: OnSeekCompleteListener){
+    private fun setOnSeekListener(onSeekCompleteListener: OnSeekCompleteListener) {
         mediaPlayer.setOnSeekCompleteListener { onSeekCompleteListener }
     }
 
@@ -160,7 +167,7 @@ class MusicService : Service(){
 
     }
 
-    fun dispatchSeekChanged(){
+    fun dispatchSeekChanged() {
         onSeekChangeListeners.forEach {
             it.onSeekChanged(mediaPlayer.currentPosition)
         }
@@ -169,13 +176,13 @@ class MusicService : Service(){
     private fun previousSong() {
 
         var index = 0
-        if(currentSongIndex != -1 && !isSuffer) {
+        if (currentSongIndex != -1 && !isSuffer) {
             index = currentSongIndex - 1
-            if(index < 0){
+            if (index < 0) {
                 index = listSong.value!!.size - 1
             }
         } else {
-            if(isSuffer){
+            if (isSuffer) {
                 index = randomSongIndex()
             }
         }
@@ -187,12 +194,12 @@ class MusicService : Service(){
     private fun nextSong() {
 
         var index = 0
-        if(currentSongIndex != -1 && !isSuffer){
+        if (currentSongIndex != -1 && !isSuffer) {
             index = currentSongIndex + 1
-            if(index >= listSong.value!!.size){
+            if (index >= listSong.value!!.size) {
                 index = 0
             }
-        } else if(isSuffer){
+        } else if (isSuffer) {
             index = randomSongIndex()
 
         }
@@ -201,9 +208,9 @@ class MusicService : Service(){
         playSongAtCurrentIndex()
     }
 
-    fun randomSongIndex() : Int{
-        if(listSong.value!!.isEmpty()){
-            return - 1
+    fun randomSongIndex(): Int {
+        if (listSong.value!!.isEmpty()) {
+            return -1
         } else {
             return java.util.Random().nextInt(listSong.value!!.size - 1)
         }
@@ -223,11 +230,11 @@ class MusicService : Service(){
         }
     }
 
-    private fun playSongAtCurrentIndex(){
+    private fun playSongAtCurrentIndex() {
         mediaPlayer.reset()
         if (currentSongIndex == -1) return
         val songId = listSong.value!![currentSongIndex].id
-        if(songId != -1){
+        if (songId != -1) {
             val trackUri = ContentUris.withAppendedId(Media.EXTERNAL_CONTENT_URI, songId.toLong())
             try {
                 mediaPlayer.setDataSource(this, trackUri)
@@ -239,10 +246,10 @@ class MusicService : Service(){
     }
 
     private fun playSong(intent: Intent) {
-       val songId = intent.getIntExtra("SONG_ID", -1)
-        if(songId > -1){
+        val songId = intent.getIntExtra("SONG_ID", -1)
+        if (songId > -1) {
             currentSongIndex = listSong.value?.indexOfFirst {
-                if(it.id == songId){
+                if (it.id == songId) {
                     return@indexOfFirst true
                 }
                 return@indexOfFirst false
@@ -265,8 +272,9 @@ class MusicService : Service(){
             notificationManager.createNotificationChannel(mChannel)
         }
     }
+
     @TargetApi(Build.VERSION_CODES.O)
-    fun createNotification() : Notification {
+    fun createNotification(): Notification {
         val mainIntent = Intent(this, MainActivity::class.java)
         val pendingIntent = PendingIntent
             .getActivity(this, 101, mainIntent, PendingIntent.FLAG_IMMUTABLE)
@@ -281,8 +289,8 @@ class MusicService : Service(){
     }
 
 
-    public inner class Binders() : Binder(){
-        fun getService() : MusicService{
+    public inner class Binders() : Binder() {
+        fun getService(): MusicService {
             return this@MusicService
         }
     }
@@ -291,8 +299,9 @@ class MusicService : Service(){
 
         return Binders()
     }
-    suspend fun loadAllSongAsync() : List<Song>{
-        return withContext(Dispatchers.IO){
+
+    suspend fun loadAllSongAsync(): List<Song> {
+        return withContext(Dispatchers.IO) {
             val result = mutableListOf<Song>()
             val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
             val projection = arrayOf(
@@ -313,34 +322,31 @@ class MusicService : Service(){
                 val titleIndex = c.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE)
                 val authorIndex = c.getColumnIndexOrThrow(MediaStore.Audio.Media.AUTHOR)
                 val albumIndex = c.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM)
-                while (c.moveToNext()){
+                while (c.moveToNext()) {
                     val id = c.getInt(idIndex)
                     val title = c.getString(titleIndex)
                     val author = c.getString(authorIndex)
                     val album = c.getString(albumIndex)
 
 
-                    val song = Song(id, title, author, album)
+                    val song = Song("", id, title, author, album)
                     result.add(song)
                 }
             }
-
-
-
             cursor?.close()
             return@withContext result
         }
     }
 
 
-    fun loadAllSong(){
+    fun loadAllSong() {
         CoroutineScope(Dispatchers.Main).launch {
             val listallSong = loadAllSongAsync()
             listSong.postValue(listallSong)
-
         }
 
     }
+
     private fun sendMediaPlayerStatus() {
         val intent = Intent("MEDIA_PLAYER_STATUS")
         intent.putExtra("isPlaying", mediaPlayer.isPlaying)
